@@ -2,18 +2,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: titulos-web
+  name: titulos-webhelm
   namespace: tituloshelm
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-staging
 spec:
   tls:
   - hosts:
-    - titulos.k8s.desarrollo.unlp.edu.ar
+    - tituloshelm.k8s.desarrollo.unlp.edu.ar
     secretName: titulos-tls
   rules:
-  - host: titulos.k8s.desarrollo.unlp.edu.ar
+  - host: tituloshelm.k8s.desarrollo.unlp.edu.ar
     http:
       paths:
       - path: /

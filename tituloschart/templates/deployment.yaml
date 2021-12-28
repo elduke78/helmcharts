@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: titulosk8s-mysql
+  name: tituloshelm-mysql
   namespace: tituloshelm
 spec:
   accessModes:
@@ -14,7 +14,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: titulosk8s-web
+  name: tituloshelm-web
   namespace: tituloshelm
 spec:
   accessModes:
@@ -28,18 +28,18 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: titulos-web
+  name: titulos-webhelm
   namespace: tituloshelm
 spec:
   selector:
     matchLabels:
-      app: titulos-web
+      app: titulos-webhelm
   serviceName: titulos-web-svc
   replicas: 1
   template:
     metadata:
       labels:
-        app: titulos-web
+        app: titulos-webhelm
         log: graylog
     spec:
       containers:
@@ -101,34 +101,34 @@ spec:
           ports:
             - containerPort: 8080
           volumeMounts:
-            - name: titulos-files
+            - name: tituloshelm-files
               mountPath: /app/private
       imagePullSecrets:
         - name: cespi-registry
       volumes:
-      - name: titulos-files
+      - name: tituloshelm-files
         persistentVolumeClaim:
-          claimName: titulosk8s-web
+          claimName: tituloshelm-web
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: titulos-wrk
+  name: titulos-wrkhelm
   namespace: tituloshelm
 spec:
   selector:
     matchLabels:
-      app: titulos-wrk
+      app: titulos-wrkhelm
   serviceName: titulos-web-svc
   replicas: 1
   template:
     metadata:
       labels:
-        app: titulos-wrk
+        app: titulos-wrkhelm
         log: graylog
     spec:
       containers:
-        - name: titulosk8s-wrk
+        - name: tituloshelm-wrk
           image: registry.desarrollo.unlp.edu.ar/desarrollo-cespi/unlp_titulos/worker:4.9.2-dev
           env:
           - name: DB_HOST
@@ -186,14 +186,14 @@ spec:
           ports:
             - containerPort: 8080
           volumeMounts:
-            - name: titulos-files
+            - name: tituloshelm-files
               mountPath: /app/private
       imagePullSecrets:
         - name: cespi-registry
       volumes:
-      - name: titulos-files
+      - name: tituloshelm-files
         persistentVolumeClaim:
-          claimName: titulosk8s-web
+          claimName: tituloshelm-web
 ---
 apiVersion: v1
 kind: Service
@@ -201,12 +201,12 @@ metadata:
   name: mysqltitulosk8s
   namespace: tituloshelm
   labels:
-    app: titulos-web
+    app: titulos-webhelm
 spec:
   ports:
     - port: 3306
   selector:
-    app: titulos-web
+    app: titulos-webhelm
     tier: mysql
   clusterIP: None
 ---
@@ -216,12 +216,12 @@ metadata:
   name: redis
   namespace: tituloshelm
   labels:
-    app: titulos-web
+    app: titulos-webgelm
 spec:
   ports:
     - port: 6379
   selector:
-    app: titulos-web
+    app: titulos-webgelm
     tier: redis
   clusterIP: None
 ---
@@ -231,18 +231,18 @@ metadata:
   name: mysql
   namespace: tituloshelm
   labels:
-    app: titulos-web
+    app: titulos-webhelm
 spec:
   selector:
     matchLabels:
-      app: titulos-web
+      app: titulos-webhelm
       tier: mysql
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: titulos-web
+        app: titulos-webhelm
         tier: mysql
     spec:
       containers:
@@ -257,12 +257,12 @@ spec:
         - containerPort: 3306
           name: mysql
         volumeMounts:
-        - name: titulos-data
+        - name: tituloshelm-data
           mountPath: /var/lib/mysql
       volumes:
-      - name: titulos-data
+      - name: tituloshelm-data
         persistentVolumeClaim:
-          claimName: titulosk8s-mysql
+          claimName: tituloshelm-mysql
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
@@ -270,18 +270,18 @@ metadata:
   name: redis
   namespace: tituloshelm
   labels:
-    app: titulos-web
+    app: titulos-webhelm
 spec:
   selector:
     matchLabels:
-      app: titulos-web
+      app: titulos-webhelm
       tier: redis
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: titulos-web
+        app: titulos-webhelm
         tier: redis
     spec:
       containers:

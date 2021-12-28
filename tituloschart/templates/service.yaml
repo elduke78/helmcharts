@@ -4,10 +4,10 @@ metadata:
   name: titulosk8sweb
   namespace: tituloshelm
   labels:
-    app: titulos-web
+    app: titulos-webhelm
 spec:
   ports:
   - port: 3000
   clusterIP: None
   selector:
-    app: titulos-web
+    app: titulos-webhelm

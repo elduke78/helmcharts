@@ -1,2 +1,20 @@
 helm create tituloschart
 
+helm package tituloschart/
+
+helm repo index .
+
+git config --global user.name "elduke78"
+
+git commit -m "adding helm chart" -a
+
+git push --set-upstream origin master
+
+git push
+
+git repo add tituloshelm https://elduke78.github.io/helmcharts/
+
+helm search repo titulos
+
+
+helm install --dry-run titulos tituloshelm/tituloschart
