@@ -1,0 +1,288 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: titulos-web
+  namespace: tituloshelm
+spec:
+  selector:
+    matchLabels:
+      app: titulos-web
+  serviceName: titulos-web-svc
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: titulos-web
+        log: graylog
+    spec:
+      containers:
+        - name: titulosk8s
+          image: registry.desarrollo.unlp.edu.ar/desarrollo-cespi/unlp_titulos/web:4.9.2-dev
+          env:
+          - name: DB_HOST
+            value: mysqltitulosk8s
+          - name: DB_NAME
+            value: titulos
+          - name: DB_PASSWORD
+            value: t1tul0s!
+          - name: DB_USER
+            value: root
+          - name: EXPEDIENTES_PASSWORD
+            value: ws212121
+          - name: EXPEDIENTES_URL
+            value: http://app.expedientes/ws.php?WSDL
+          - name: EXPEDIENTES_USERNAME
+            value: ws
+          - name: GUARANI_PASSWORD
+            value: '123456'
+          - name: GUARANI_URL
+            value: https://ws-testing.guarani.cespi.unlp.edu.ar
+          - name: GUARANI_USERNAME
+            value: ws
+          - name: INTEGRATOR_TOKEN
+            value: 5935524329989b000c37bd0e50775e64091c4efd470358d3d607c05a
+          - name: INTEGRATOR_URL
+            value: https://api.unlp.edu.ar/integrador-unlp/
+          - name: PAGOS_ITEM_ID
+            value: b1589b4e
+          - name: PAGOS_URL
+            value: https://api.unlp.edu.ar/pagos-testing
+          - name: REDIS_URL
+            value: redis://redis:6379/0
+          - name: SSO_ISSUER
+            value: unlp.cespi.titulos.k8s
+          - name: TYK_ENDPOINT
+            value: https://5935524329989b000c37bd0ec329449465ee4f7b5341d91649c4e3d1@api.unlp.edu.ar/datos-academicos-dev
+          - name: TYK_TOKEN
+            value: 5935524329989b000c37bd0ec329449465ee4f7b5341d91649c4e3d1
+          - name: PAGOS_TEST_EMAIL
+            value: guarani@unlp.edu.ar
+          - name: REDIS_CACHE_URL
+            value: redis://redis:6379/0
+          - name: MAIL_FROM
+            value: titulos@mail.testing.unlp.edu.ar
+          - name: MAIL_HOST
+            value: mail.testing.unlp.edu.ar
+          - name: MAIL_STARTTLS_AUTO
+            value: 'true'
+          - name: MAIL_DOMAIN
+            value: mail.testing.unlp.edu.ar
+          - name: PAGOS_TOKEN
+            value: lThDxkNxbRtHWe3rAFNGg6sCKg1ykNVu
+          - name: FREE_DIGITAL_DIPLOMA
+            value: '1'
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: titulos-files
+              mountPath: /app/private
+      imagePullSecrets:
+        - name: cespi-registry
+      volumes:
+      - name: titulos-files
+        persistentVolumeClaim:
+          claimName: titulosk8s-web
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: titulos-wrk
+  namespace: tituloshelm
+spec:
+  selector:
+    matchLabels:
+      app: titulos-wrk
+  serviceName: titulos-web-svc
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: titulos-wrk
+        log: graylog
+    spec:
+      containers:
+        - name: titulosk8s-wrk
+          image: registry.desarrollo.unlp.edu.ar/desarrollo-cespi/unlp_titulos/worker:4.9.2-dev
+          env:
+          - name: DB_HOST
+            value: mysqltitulosk8s
+          - name: DB_NAME
+            value: titulos
+          - name: DB_PASSWORD
+            value: t1tul0s!
+          - name: DB_USER
+            value: root
+          - name: EXPEDIENTES_PASSWORD
+            value: ws212121
+          - name: EXPEDIENTES_URL
+            value: http://app.expedientes/ws.php?WSDL
+          - name: EXPEDIENTES_USERNAME
+            value: ws
+          - name: GUARANI_PASSWORD
+            value: '123456'
+          - name: GUARANI_URL
+            value: https://ws-testing.guarani.cespi.unlp.edu.ar
+          - name: GUARANI_USERNAME
+            value: ws
+          - name: INTEGRATOR_TOKEN
+            value: 5935524329989b000c37bd0e50775e64091c4efd470358d3d607c05a
+          - name: INTEGRATOR_URL
+            value: https://api.unlp.edu.ar/integrador-unlp/
+          - name: PAGOS_ITEM_ID
+            value: b1589b4e
+          - name: PAGOS_URL
+            value: https://api.unlp.edu.ar/pagos-testing
+          - name: REDIS_URL
+            value: redis://redis:6379/0
+          - name: SSO_ISSUER
+            value: unlp.cespi.titulos.k8s
+          - name: TYK_ENDPOINT
+            value: https://5935524329989b000c37bd0ec329449465ee4f7b5341d91649c4e3d1@api.unlp.edu.ar/datos-academicos-dev
+          - name: TYK_TOKEN
+            value: 5935524329989b000c37bd0ec329449465ee4f7b5341d91649c4e3d1
+          - name: PAGOS_TEST_EMAIL
+            value: guarani@unlp.edu.ar
+          - name: REDIS_CACHE_URL
+            value: redis://redis:6379/0
+          - name: MAIL_FROM
+            value: titulos@mail.testing.unlp.edu.ar
+          - name: MAIL_HOST
+            value: mail.testing.unlp.edu.ar
+          - name: MAIL_STARTTLS_AUTO
+            value: 'true'
+          - name: MAIL_DOMAIN
+            value: mail.testing.unlp.edu.ar
+          - name: PAGOS_TOKEN
+            value: lThDxkNxbRtHWe3rAFNGg6sCKg1ykNVu
+          - name: FREE_DIGITAL_DIPLOMA
+            value: '1'
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: titulos-files
+              mountPath: /app/private
+      imagePullSecrets:
+        - name: cespi-registry
+      volumes:
+      - name: titulos-files
+        persistentVolumeClaim:
+          claimName: titulosk8s-web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysqltitulosk8s
+  namespace: tituloshelm
+  labels:
+    app: titulos-web
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: titulos-web
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: tituloshelm
+  labels:
+    app: titulos-web
+spec:
+  ports:
+    - port: 6379
+  selector:
+    app: titulos-web
+    tier: redis
+  clusterIP: None
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: tituloshelm
+  labels:
+    app: titulos-web
+spec:
+  selector:
+    matchLabels:
+      app: titulos-web
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: titulos-web
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.5
+        name: mysql
+        env:
+        - name: MYSQL_DATABASE
+          value: titulos
+        - name: MYSQL_ROOT_PASSWORD
+          value: t1tul0s!
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: titulos-data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: titulos-data
+        persistentVolumeClaim:
+          claimName: titulosk8s-mysql
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: redis
+  namespace: tituloshelm
+  labels:
+    app: titulos-web
+spec:
+  selector:
+    matchLabels:
+      app: titulos-web
+      tier: redis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: titulos-web
+        tier: redis
+    spec:
+      containers:
+      - image: redis:3-alpine
+        name: redis
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: titulosk8s-mysql
+  namespace: tituloshelm
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: nfs-client
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: titulosk8s-web
+  namespace: tituloshelm
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: nfs-client
